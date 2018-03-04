@@ -1,0 +1,410 @@
+<html>
+<head>
+<title>Chaturbate FFmpeg Recorder Interface by: 2MinhetNguyles</title>
+<HTA:APPLICATION
+  APPLICATIONNAME="Chaturbate FFmpeg Recorder Interface by: 2MinhetNguyles"
+  ID="CbFFmpegRec"
+  VERSION="1.0"/>
+</head>
+
+<script language="VBScript">
+
+Sub Window_OnLoad
+	Dim objShell: Set objShell = CreateObject("WScript.Shell")
+	Dim objFSO: Set objFSO = CreateObject("Scripting.FileSystemObject")
+	
+	window.resizeTo 650,700
+	
+	If Not objFSO.FileExists(objShell.CurrentDirectory & "\ffmpeg.exe") Then
+		overWorld.innerHtml = "FFMpeg not detected! Please place this file in the same directory as FFMpeg.exe and run it again!<p><b><a href='https://www.ffmpeg.org/download.html'>Download Here</a>"
+		Exit Sub
+	End If
+	
+	If Not objFSO.FolderExists(objShell.CurrentDirectory & "\Recordings") Then
+		objFSO.CreateFolder(objShell.CurrentDirectory & "\Recordings")
+	End If
+	
+	Call readFavourites
+
+End Sub
+
+
+
+'**************Functions**************
+
+'Sorts an input array
+Function arrSort(inputArray, sortAscending)
+	Dim objArray: Set objArray = CreateObject("System.Collections.ArrayList")
+	Dim tempArray
+	Dim i, x
+	
+	For i = 0 To UBound(inputArray)
+		objArray.Add inputArray(i)
+	Next
+	
+	objArray.Sort()
+	If Not sortAscending Then objArray.Reverse()
+	
+	ReDim tempArray(objArray.Count-1)
+	
+	i = 0
+	For Each x in objArray
+		tempArray(i) = x
+		i = i + 1
+	Next
+	
+	arrSort = tempArray
+	
+End Function
+
+
+'Removes element from array
+Function arrRemove(inputArray, elementToRemove)
+	Dim objArray: Set objArray = CreateObject("System.Collections.ArrayList")
+	Dim tempArray
+	Dim i, x, o
+	
+	For i = 0 To UBound(inputArray)
+	
+		If inputArray(i) <> elementToRemove Then
+			objArray.Add inputArray(i)
+		Else
+		End If
+	Next
+	
+	ReDim tempArray(objArray.Count-1)
+	
+	i = 0
+	For Each x in objArray
+		tempArray(i) = x
+		i = i + 1
+	Next
+	
+	arrRemove = tempArray
+	
+End Function
+
+
+'Creates a listbox at a spanID from an array.
+Function createListBox(listName, inputArray)
+
+	Dim spanHtml
+	Dim i
+	
+	spanHtml = "<select name='" & listName & "' id='" & listName & "' size=" & UBound(inputArray)+1 & ">"
+	For i = 1 To UBound(inputArray)+1
+		spanHtml = spanHtml & "<option value='" & i & "'>" & inputArray(i-1) & "</option>"
+	Next
+	spanHtml = spanHtml & "</select>"
+	
+	createListBox = spanHtml
+
+End Function
+
+
+'Returns the value of the selected item in favList
+Function getFavListSelection
+	On Error Resume Next
+	Dim x
+
+	For Each x in favList.Options
+    	If x.Selected Then
+        	getFavListSelection = x.innerHtml
+        End If
+    Next
+
+End Function
+
+
+'Returns the HTML source of a webpage.
+Function getHTML(address)
+	Dim objXmlHttp: Set objXmlHttp = createobject("MSXML2.XMLHTTP.6.0")
+	
+	objXmlHttp.open "get", address
+	objXmlHttp.send
+	getHTML = objXmlHttp.responseText
+
+End Function
+
+
+'Figures out the output name of the stream to be recorded
+Function getOutputName()
+	Dim objShell: Set objShell = CreateObject("WScript.Shell")
+	Dim objFSO: Set objFSO = CreateObject("Scripting.FileSystemObject")
+	Dim outputName
+	Dim i
+	
+	outputName = Right(cbAddress.Value, Len(cbAddress.value) - 23)
+	outputName = Replace(outputName,"/","")
+	outputName = outputName & " " & Replace(Now(),"/","-")
+	outputName = Replace(outputName,":",".")
+	outputName = outputName & ".mp4"
+	
+	getOutputName = outputName
+	
+End Function
+
+
+'Reads every line of a text file and returns as a 0 based array.
+Function readTextFile(filePath)
+	Dim objFSO: Set objFSO = CreateObject("Scripting.FileSystemObject")
+	Dim objFile: Set objFile = objFSO.OpenTextFile(filePath)
+	Dim arrTemp, i
+	
+	arrTemp = Array()
+	
+	'readTextFile = Split(objFile.ReadAll,vbCrLf)
+	
+	i = 0
+	Do Until objFile.AtEndOfStream
+		ReDim Preserve arrTemp(i)
+  		arrTemp(i) = objFile.ReadLine
+  		i = i +1
+	Loop
+	
+	readTextFile = arrTemp
+	
+	objFile.Close
+	
+End Function
+
+
+'Removes duplicates from an input array.
+'Reused from some message board, forgot to add link.
+Public Function RemoveDuplicate(byVal arrDuplicate())
+	Dim sdScriptingDictionary, Item, arrReturn
+	
+	Set sdScriptingDictionary = CreateObject("Scripting.Dictionary")
+	sdScriptingDictionary.RemoveAll
+	sdScriptingDictionary.CompareMode = BinaryCompare
+	For Each Item In arrDuplicate
+	    'If item does not exist in dictionary d then add it
+	    If Not sdScriptingDictionary.Exists(Item) Then sdScriptingDictionary.Add Item, Item
+	    'If Not sdScriptingDictionary.Exists(item) Then
+	        'sdScriptingDictionary.Remove(item)
+	    'End If
+	Next
+	arrReturn = sdScriptingDictionary.keys
+	
+	'Clean Up
+	Erase arrDuplicate
+	Set arrDuplicate = Nothing
+	
+	sdScriptingDictionary.RemoveAll
+	Set sdScriptingDictionary = Nothing
+	
+	RemoveDuplicate = arrReturn
+End Function
+
+
+'Writes values from an array to a file
+Function writeToTextFile(filePath, inputArray, delimiter)
+	Dim objFSO: Set objFSO = CreateObject("Scripting.FileSystemObject")
+	Dim objFile: Set objFile = objFSO.OpenTextFile(filePath, 2)
+	Dim i
+	
+	For i = 0 To UBound(inputArray)
+		objFile.Write inputArray(i) & delimiter
+	Next
+	
+	objFile.Close
+	
+End Function
+
+
+
+'**************End Of Functions**************
+
+
+
+'**************Subroutines**************
+
+'Forcefully kill a task by image name
+'Call killTask("Program.exe")
+Sub killtask(ImageName)
+	Dim objShell : Set objShell = CreateObject("WScript.Shell")
+	objShell.Run "taskkill /f /im " & Chr(34) & ImageName & Chr(34)
+End Sub
+
+
+'For reading Favourites file
+Sub readFavourites
+
+	Dim objShell: Set objShell = CreateObject("WScript.Shell")
+	Dim objFSO: Set objFSO = CreateObject("Scripting.FileSystemObject")
+	Dim arrayTemp
+	
+	'If no favourites file present
+	If Not objFSO.FileExists(objShell.CurrentDirectory & "\Favourites.txt") Then
+		objFSO.CreateTextFile(objShell.CurrentDirectory & "\Favourites.txt")
+	End If
+	
+	arrayTemp = readTextFile(objShell.CurrentDirectory & "\Favourites.txt")
+	arrayTemp = arrSort(arrayTemp, True)
+	arrayTemp = RemoveDuplicate(arrayTemp)
+	
+	spanList.innerHtml = createListBox("favList", arrayTemp)
+
+End Sub
+
+
+'WScript.Sleep workaround for HTA
+'Call Sleep(1000)
+Sub Sleep(MilliSeconds)
+	Dim objShell : Set objShell = CreateObject("WScript.Shell")
+    objShell.Run "Timeout /T " & MilliSeconds/1000 & " /nobreak" ,0 ,True   
+End Sub
+
+'**************End Of Subroutines**************
+
+
+
+
+'**************GUI Controls**************
+
+Sub OnClickButtongetM38U()
+	Dim modelHtml
+
+	modelHtml = getHTML(cbAddress.Value)
+	
+	'Format Address
+	modelHtml = Left(modelHtml,InStr(modelHtml,".m3u8")+4)
+	modelHtml = Right(modelHtml, Len(modelHtml)-InStr(modelHtml,"https://edge")+1)
+	
+	If Len(modelHtml) < 20 Then
+		modelHtml = ""
+		MsgBox "Sorry, the model is offline or does not exist!"
+	End If
+	
+	information.Value = modelHtml
+	
+End Sub
+
+
+'Clears the input box and stream info.
+Sub OnClickButtonclearInput()
+	cbAddress.Value = ""
+	information.Value = ""
+End Sub
+
+
+Sub OnClickButtonstartFFmpeg()
+	Dim objShell: Set objShell = CreateObject("WScript.Shell")
+
+	If Len(information.value) < 20 Then
+		MsgBox "You need to get a stream address first!"
+	End If
+	
+	objShell.Run "ffmpeg -i " & information.value & " -c copy -bsf:a aac_adtstoasc " & Chr(34) & ".\Recordings\" & getOutputName & Chr(34)
+End Sub
+
+
+'Adds the current input model to the favourites list.
+Sub OnClickButtonaddFav()
+	Dim objShell: Set objShell = CreateObject("WScript.Shell")
+	Dim objFSO: Set objFSO = CreateObject("Scripting.FileSystemObject")
+	Dim newEntry, arrayTemp, arLn
+	Dim i
+	
+	If Len(cbAddress.Value) < 15 Then
+		MsgBox "Model address invalid!"
+		Exit Sub
+	End If
+	
+	newEntry = Right(cbAddress.Value, Len(cbAddress.value) - 23)
+	newEntry = Replace(newEntry,"/","")
+	
+	If Not objFSO.FileExists(objShell.CurrentDirectory & "\Favourites.txt") Then
+		objShell.Run "cmd.exe /c echo " & newEntry & " >> " & Chr(34) & objShell.CurrentDirectory & "\Favourites.txt" & Chr(34)
+		Exit Sub
+	End If
+	
+	arrayTemp = readTextFile(objShell.CurrentDirectory & "\Favourites.txt")
+	arLn = UBound(arrayTemp)+1
+	ReDim Preserve arrayTemp(arLn)
+	arrayTemp(arLn) = newEntry
+	arrayTemp = arrSort(arrayTemp, True)
+	
+	arrayTemp = RemoveDuplicate(arrayTemp)
+	
+	Call writeToTextFile(objShell.CurrentDirectory & "\Favourites.txt",arrayTemp, VbCrLf)
+	Call readFavourites
+	
+End Sub
+
+
+'Removes the selected model from favourites list.
+Sub OnClickButtonremFav()
+	Dim objShell: Set objShell = CreateObject("WScript.Shell")
+	Dim arrayTemp
+	
+	arrayTemp = readTextFile(objShell.CurrentDirectory & "\Favourites.txt")
+	arrayTemp = arrSort(arrayTemp, True)
+	arrayTemp = RemoveDuplicate(arrayTemp)
+	arrayTemp = arrRemove(arrayTemp, getFavListSelection)
+	
+	Call writeToTextFile(objShell.CurrentDirectory & "\Favourites.txt",arrayTemp, VbCrLf)
+	Call readFavourites
+	
+End Sub
+
+
+'Gets the stream for the selected model on the favourites list.
+Sub OnClickButtongetFavModel()
+	cbAddress.Value = ""
+	information.Value = ""
+	cbAddress.Value = "https://chaturbate.com/" & getFavListSelection & "/"
+	getM38U.Click
+	
+End Sub
+
+
+Sub OnClickButtonprevStream()
+	cbAddress.Value = ""
+	information.Value = ""
+	cbAddress.Value = "https://chaturbate.com/" & getFavListSelection & "/"
+	getM38U.Click
+	
+	If Len(Information.Value) > 10 Then
+		vidPreview.innerHtml = "<embed src='" & information.Value & "' width='720' height='480' autostart='true' type='video/mp4'>"
+	End If
+	
+End Sub
+
+
+Sub OnClickButtonvidPreviewClose()
+	vidPreview.innerHtml = ""
+End Sub
+
+'**************End Of GUI Controls**************
+
+</script>
+
+<body bgcolor="#d0c0c8">
+<span id="overWorld">
+<!--Add your controls here-->
+<input type="button" name="getM38U" id="getM38U" value="Get Stream Address" onclick="OnClickButtongetM38U">
+<input type="button" name="startFFmpeg" id="startFFmpeg" value="Start FFmpeg" onclick="OnClickButtonstartFFmpeg">
+<b><p>
+<span>Please Enter The Model URL Below:</span>
+<b><p>
+<input type="text" name="cbAddress" id="cbAddress" value="" size="50">
+<input type="button" name="clearInput" id="clearInput" value="Clear" onclick="OnClickButtonclearInput">
+<input type="button" name="addFav" id="addFav" value="Add To Favourites" onclick="OnClickButtonaddFav">
+<b><p>
+<input type="text" name="information" id="information" value="" size="180"></textarea>
+<b><p>
+<span>Favorites List</span>
+<b><p>
+<input type="button" name="remFav" id="remFav" value="Remove From Favourites" onclick="OnClickButtonremFav">
+<b><p>
+<span id="spanList"></span>
+&nbsp;&nbsp;<input type="button" name="getFavModel" id="getFavModel" value="Get Selected Stream" onclick="OnClickButtongetFavModel">
+<input type="button" name="prevStream" id="prevStream" value="Preview Stream" onclick="OnClickButtonprevStream">
+<input type="button" name="vidPreviewClose" id="vidPreviewClose" value="Clear Preview" onclick="OnClickButtonvidPreviewClose">
+<b><p>
+<span id="vidPreview"></span>
+</span>
+<!--{{InsertControlsHere}}-Do not remove this line-->
+</body>
+</html>
