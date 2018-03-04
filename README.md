@@ -30,9 +30,11 @@ Future Wish List:
   
 FAQS:
   - Q.Why VBScript and not JavaScript?
-    A.I am more familiar with VBScript, but if someone wants to convert go ahead, shouldn't be too difficult.
+  - A.I am more familiar with VBScript, but if someone wants to convert go ahead, shouldn't be too difficult.
     
   - Q. The stream suddenly stopped recording?
-    A. This is a GUI for FFMpeg not a recorder, the model has probably gone offline/switched to private show and thus the stream has dropped out (the stream address actually changes when this happens too).
+  - A. This is a GUI for FFMpeg not a recorder, the model has probably gone offline/switched to private show and thus the stream has dropped out (the stream address actually changes when this happens too).
     
+  - Q.What IDE did you use?
+  - A.HTAEDIT
     
