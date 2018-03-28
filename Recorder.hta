@@ -294,8 +294,8 @@ Sub OnClickButtonstartFFmpeg()
 	If Len(information.value) < 20 Then
 		MsgBox "You need to get a stream address first!"
 	End If
-	
-	objShell.Run "ffmpeg -i " & information.value & " -c copy -bsf:a aac_adtstoasc " & Chr(34) & ".\Recordings\" & getOutputName & Chr(34)
+	objShell.Run "ffmpeg -i " & information.value & " -acodec copy -vcodec copy " & Chr(34) & ".\Recordings\" & getOutputName & Chr(34)
+	'objShell.Run "ffmpeg -i " & information.value & " -c copy -bsf:a aac_adtstoasc " & Chr(34) & ".\Recordings\" & getOutputName & Chr(34)
 End Sub
 
 
