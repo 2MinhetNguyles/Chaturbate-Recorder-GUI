@@ -25,14 +25,17 @@ Features:
 
 FAQS:
   - Q.Why VB6.0 and not some other curley brace language.
-  - A.Short answer, I am very familiar with VB and VB variants (6.0 being my favourite.)
-  - A.Opinionated answer, curley brace languages suck dick.
+  A.Short answer, I am very familiar with VB and VB variants (6.0 being my favourite.)
+  A.Opinionated answer, curley brace languages suck dick.
     
   - Q. The stream suddenly stopped recording?
-  - A. This is a GUI for FFMpeg not a recorder, the model has probably gone offline/switched to private show and thus the stream has dropped out (the stream address actually changes when this happens too). Also it does require a fairly large amount of bandwidth to stream and capture.
+  A. This is a GUI for FFMpeg not a recorder, the model has probably gone offline/switched to private show and thus the stream has dropped out (the stream address actually changes when this happens too). Also it does require a fairly large amount of bandwidth to stream and capture.
     
   - Q.What IDE did you use?
-  - A.Microsoft Visual Basic 6.0
+  A.Microsoft Visual Basic 6.0
+  
+  - Q. Are you going to release the source code?
+    A. Yes, eventually.... when I can be bothered.
 
 
 
