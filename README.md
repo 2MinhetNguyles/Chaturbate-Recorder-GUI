@@ -35,7 +35,8 @@ FAQS:
   A.Microsoft Visual Basic 6.0
   
   - Q. Are you going to release the source code?
-    A. Yes, eventually.... when I can be bothered.
+    A. Y̶e̶s̶,̶ ̶e̶v̶e̶n̶t̶u̶a̶l̶l̶y̶.̶.̶.̶.̶ ̶w̶h̶e̶n̶ ̶I̶ ̶c̶a̶n̶ ̶b̶e̶ ̶b̶o̶t̶h̶e̶r̶e̶d̶.̶
+    A. Yes, it is now released into the wild. Go forth and multiply.
 
 
 
