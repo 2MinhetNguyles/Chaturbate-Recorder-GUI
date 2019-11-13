@@ -1,6 +1,8 @@
 # Chaturbate-Recorder-GUI (.EXE)
 Chaturbate Recorder GUI for FFMpeg
 
+Update: November 2019, chaturbate has subtly changed their stream URL (well looks like they tried to hide it)... the necessary adjustments have been made. Will upload source at a later date.
+
 Requirements:
   *Windows only! Written and tested on Windows 10
   *FFMpeg
