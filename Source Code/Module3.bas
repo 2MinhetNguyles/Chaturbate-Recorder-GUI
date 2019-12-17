@@ -7,11 +7,11 @@ Const GW_HWNDFIRST = 0
 Const GW_HWNDNEXT = 2
 
 Function LoadTaskList()
-    Dim CurrWnd As Long
-    Dim Length As Long
-    Dim TaskName As String
-    Dim Parent As Long
-    Dim tempCol As New Collection
+Dim CurrWnd As Long
+Dim Length As Long
+Dim TaskName As String
+Dim Parent As Long
+Dim tempCol As New Collection
 
     CurrWnd = GetWindow(Recorder.hwnd, GW_HWNDFIRST)
     While CurrWnd <> 0

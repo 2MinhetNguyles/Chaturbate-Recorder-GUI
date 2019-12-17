@@ -9,11 +9,16 @@ Begin VB.Form RunningRecorders
    ScaleHeight     =   5100
    ScaleWidth      =   6705
    StartUpPosition =   3  'Windows Default
+   Begin VB.Timer Timer1 
+      Interval        =   1000
+      Left            =   4320
+      Top             =   240
+   End
    Begin VB.CommandButton btnHide 
       Caption         =   "Hide All Recorders"
       Height          =   495
       Left            =   4320
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   4320
       Width           =   2175
    End
@@ -21,17 +26,9 @@ Begin VB.Form RunningRecorders
       Caption         =   "Show All Recorders"
       Height          =   495
       Left            =   4320
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   720
       Width           =   2175
-   End
-   Begin VB.CommandButton btnRefresh 
-      Caption         =   "Refresh List"
-      Height          =   375
-      Left            =   2400
-      TabIndex        =   2
-      Top             =   240
-      Width           =   1815
    End
    Begin VB.ListBox List1 
       Height          =   4155
@@ -44,7 +41,7 @@ Begin VB.Form RunningRecorders
       Caption         =   $"RunningRecorders.frx":0000
       Height          =   2295
       Left            =   4320
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   1680
       Width           =   2175
    End
@@ -63,7 +60,7 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Private Sub btnHide_Click()
-    Dim i
+Dim i
     If List1.ListCount <> 0 Then
         For i = 0 To List1.ListCount - 1
             Call HideWindow(CDbl(List1.List(i)))
@@ -71,22 +68,8 @@ Private Sub btnHide_Click()
     End If
 End Sub
 
-Private Sub btnRefresh_Click()
-
-    Dim colRecorders As New Collection
-    Dim x
-    
-    List1.Clear
-    Set colRecorders = LoadTaskList
-    
-    For Each x In colRecorders
-        List1.AddItem x
-    Next
-
-End Sub
-
 Private Sub btnShow_Click()
-    Dim i
+Dim i
     If List1.ListCount <> 0 Then
         For i = 0 To List1.ListCount - 1
             Call UnHideWindow(CDbl(List1.List(i)))
@@ -94,6 +77,16 @@ Private Sub btnShow_Click()
     End If
 End Sub
 
-Private Sub Form_Load()
-    Call btnRefresh_Click
+'Updates the list of recorders each tick.
+Private Sub Timer1_Timer()
+Dim colRecorders As New Collection
+Dim x
+    
+    List1.Clear
+    Set colRecorders = LoadTaskList
+    
+    For Each x In colRecorders
+        List1.AddItem x
+    Next
+    
 End Sub

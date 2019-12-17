@@ -269,9 +269,9 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Private Sub btnAddFav_Click()
-    Dim arrTemp
-    Dim boolMatch
-    Dim i
+Dim arrTemp
+Dim boolMatch
+Dim i
     
     If Len(cbAddress.Text) > 22 Then
         arrTemp = Split(cbAddress.Text, "/")
@@ -298,7 +298,7 @@ Private Sub btnCopy_Click()
 End Sub
 
 Private Sub btnFFmpeg_Click()
-    Dim objShell: Set objShell = CreateObject("WScript.Shell")
+Dim objShell: Set objShell = CreateObject("WScript.Shell")
     If Len(information.Text) < 20 Then
         MsgBox "You need to get a stream address first!"
     Else
@@ -316,7 +316,8 @@ Private Sub btnGallery_Click()
 End Sub
 
 Private Sub btnGetStreamAddress_Click()
-    Dim modelHtml
+On Error GoTo ErrorExit
+Dim modelHtml
     
     modelHtml = getHTML(cbAddress.Text)
     
@@ -329,13 +330,37 @@ Private Sub btnGetStreamAddress_Click()
         MsgBox "Sorry, the model is offline or does not exist!"
     End If
     
+    Call unfuckModelAddress(modelHtml)
+    
     information.Text = modelHtml
+    
+ErrorExit:
+    Exit Sub
     
 End Sub
 
 
+Private Sub unfuckModelAddress(ByRef modelURL)
+'Dim strTempA: strTempA = ""
+Dim strTempB: strTempB = ""
+    
+    'strTempA = Left(modelURL, InStr(1, modelURL, "/live")) & "live-hls/"
+    'strTempB = Replace(modelURL, strTempA, "")
+    
+    strTempB = Replace(modelURL, "/live\u002Dhls/", "/live-hls/")
+    strTempB = Replace(strTempB, "\u002Dhls/", "")
+    strTempB = Replace(strTempB, "\u002D", "-")
+    'strTempB = Replace(strTempB, "playlist.m3u8", "chunklist_w693825947_b5128000_t64RlBTOjMwLjA=.m3u8")
+    
+    modelURL = strTempB 'strTempA & strTempB
+
+End Sub
+
+
+
+
 Private Sub btnRemFav_Click()
-    On Error Resume Next
+On Error Resume Next
     List1.RemoveItem (List1.ListIndex)
     Call WriteFavourites
 End Sub
@@ -354,15 +379,24 @@ Private Sub btnShowPreview_Click()
 End Sub
 
 Private Sub btnWhoIsOnline_Click()
-    On Error Resume Next
+On Error Resume Next
     Call whoIsOnline
 End Sub
 
+Private Sub Command1_Click()
+    Clipboard.Clear
+    Clipboard.SetText getHTML("https://cbjpeg.stream.highwebmedia.com/stream?room=cutiebooty_em")
+End Sub
+
+Private Sub Command2_Click()
+    Clipboard.Clear
+    Clipboard.SetText getHTML("https://cbjpeg.stream.highwebmedia.com/stream?room=happyhornycorn")
+End Sub
+
 Private Sub Form_Load()
-    
-    Dim objFSO: Set objFSO = CreateObject("Scripting.FileSystemObject")
-    Dim colFavs
-    Dim x
+Dim objFSO: Set objFSO = CreateObject("Scripting.FileSystemObject")
+Dim colFavs
+Dim x
     
     'Check for ffmpeg.
     If FileExists(App.Path & "\ffmpeg.exe") = False Then MsgBox "ffmpeg not detected, please place it in the same directory as this executable!", vbOKOnly, "ffmpeg missing": Unload Me: Exit Sub

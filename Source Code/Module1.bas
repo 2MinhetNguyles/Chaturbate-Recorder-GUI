@@ -1,7 +1,7 @@
 Attribute VB_Name = "Module1"
 'Returns the HTML source of a webpage.
-Function getHTML(address)
-    Dim objXmlHttp: Set objXmlHttp = CreateObject("MSXML2.XMLHTTP.6.0")
+Public Function getHTML(address)
+Dim objXmlHttp: Set objXmlHttp = CreateObject("MSXML2.XMLHTTP.6.0")
     
     objXmlHttp.Open "get", address
     objXmlHttp.send
@@ -9,12 +9,31 @@ Function getHTML(address)
 
 End Function
 
+Public Function AreYouOnline(strModel As String)
+On Error Resume Next
+Dim objXmlHttp: Set objXmlHttp = CreateObject("MSXML2.XMLHTTP.6.0")
+Dim tempVar As String
+    
+    objXmlHttp.Open "get", "https://cbjpeg.stream.highwebmedia.com/stream?room=" & strModel
+    objXmlHttp.send
+    tempVar = objXmlHttp.responseText
+    
+    'Err.Number: -1072896748 means online.
+    'Err.Number: -2147467260 means offline.
+    If Err.Number = -1072896748 Then
+        AreYouOnline = True
+    Else
+        AreYouOnline = False
+    End If
+
+End Function
+
 
 'Determines if a file exists or not.
 Function FileExists(strPath)
-    On Error Resume Next
-    Dim objFSO: Set objFSO = CreateObject("Scripting.FileSystemObject")
-    Dim boolFile: boolFile = False
+On Error Resume Next
+Dim objFSO: Set objFSO = CreateObject("Scripting.FileSystemObject")
+Dim boolFile: boolFile = False
     If objFSO.FileExists(strPath) Then boolFile = True
     FileExists = boolFile
 End Function
@@ -41,9 +60,8 @@ End Function
 
 
 Sub WriteFavourites()
-
-    Dim strFile: strFile = App.Path & "\Favourites.txt"
-    Dim i
+Dim strFile: strFile = App.Path & "\Favourites.txt"
+Dim i
     
     Open strFile For Output As #1
     
@@ -59,13 +77,15 @@ End Sub
 
 
 
-Public Function FindFiles(FolderPath As String, Optional FileExtension As String, Optional IncludeDirectories As Boolean, Optional onlyDirectories As Boolean) As Collection
-
-    Dim file As String
-    Dim i As Integer
-    Dim tempArray As New Collection
-    Dim objFSO
-    Dim x As String
+Public Function FindFiles(FolderPath As String, _
+                          Optional FileExtension As String, _
+                          Optional IncludeDirectories As Boolean, _
+                          Optional onlyDirectories As Boolean) As Collection
+Dim file As String
+Dim i As Integer
+Dim tempArray As New Collection
+Dim objFSO
+Dim x As String
     
     Set objFSO = CreateObject("Scripting.FileSystemObject")
 
@@ -99,27 +119,29 @@ End Function
 
 'Populates the online list.
 Sub whoIsOnline()
-
-    Dim modelHtml
-    Dim i
+Dim modelHtml
+Dim i
     
     Recorder.List2.Clear
     For i = 1 To Recorder.List1.ListCount
     
         Recorder.lblCheck.Caption = "Checking: " & i & " of " & Recorder.List1.ListCount
-        DoEvents
-        modelHtml = getHTML("https://chaturbate.com/" & Recorder.List1.List(i - 1) & "/")
+'        DoEvents
+'        modelHtml = getHTML("https://chaturbate.com/" & Recorder.List1.List(i - 1) & "/")
         
         'Format Address
-        modelHtml = Left(modelHtml, InStr(modelHtml, ".m3u8") + 4)
-        modelHtml = Right(modelHtml, Len(modelHtml) - InStr(modelHtml, "https://edge") + 1)
+'        modelHtml = Left(modelHtml, InStr(modelHtml, ".m3u8") + 4)
+'        modelHtml = Right(modelHtml, Len(modelHtml) - InStr(modelHtml, "https://edge") + 1)
         
-        If Len(modelHtml) < 20 Then
-            modelHtml = ""
+'        If Len(modelHtml) < 20 Then
+'            modelHtml = ""
             'Offline
-        Else
-            Recorder.List2.AddItem Recorder.List1.List(i - 1)
-        End If
+'        Else
+'            Recorder.List2.AddItem Recorder.List1.List(i - 1)
+'        End If
+
+        If AreYouOnline(Recorder.List1.List(i - 1)) Then Recorder.List2.AddItem Recorder.List1.List(i - 1)
+        DoEvents
         
     Next i
 
@@ -132,10 +154,10 @@ End Sub
 
 'Figures out the output name of the stream to be recorded
 Function getOutputName()
-    Dim objShell: Set objShell = CreateObject("WScript.Shell")
-    Dim objFSO: Set objFSO = CreateObject("Scripting.FileSystemObject")
-    Dim outputName
-    Dim i
+Dim objShell: Set objShell = CreateObject("WScript.Shell")
+Dim objFSO: Set objFSO = CreateObject("Scripting.FileSystemObject")
+Dim outputName
+Dim i
     
     outputName = Right(Recorder.cbAddress.Text, Len(Recorder.cbAddress.Text) - 23)
     outputName = Replace(outputName, "/", "")
@@ -151,8 +173,8 @@ End Function
 
 'Hides all ffmpeg windows.
 Sub HideAllRecorders()
-    Dim colRecorders As New Collection
-    Dim x
+Dim colRecorders As New Collection
+Dim x
     
     Set colRecorders = LoadTaskList
     

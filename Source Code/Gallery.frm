@@ -88,12 +88,11 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Private Sub Form_Load()
-    
-    Dim colFiles As New Collection
-    Dim arrTemp
-    Dim boolMatch
-    Dim i
-    Dim x
+Dim colFiles As New Collection
+Dim arrTemp
+Dim boolMatch
+Dim i
+Dim x
     
     Set colFiles = FindFiles(App.Path & "\Recordings\", , False, False)
     
@@ -109,11 +108,10 @@ Private Sub Form_Load()
 End Sub
 
 Private Sub List1_Click()
-    
-    Dim colFiles As New Collection
-    Dim arrTemp
-    Dim i
-    Dim x
+Dim colFiles As New Collection
+Dim arrTemp
+Dim i
+Dim x
     
     Set colFiles = FindFiles(App.Path & "\Recordings\", , False, False)
     List2.Clear
@@ -122,8 +120,7 @@ Private Sub List1_Click()
         arrTemp = Split(x, " ")
         If UCase(arrTemp(0)) = UCase(List1.Text) Then List2.AddItem x
     Next
-    
-    
+
 End Sub
 
 Private Sub List2_Click()
